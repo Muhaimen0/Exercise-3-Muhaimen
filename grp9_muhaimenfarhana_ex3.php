@@ -8,9 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = isset($_POST['name']) ? $_POST['name'] : '';  
     $password = isset($_POST['password']) ? $_POST['password'] : '';  
     $time = isset($_POST['time']) ? $_POST['time'] : '';  
-
-    $newRecord = "ID: $id | Name: $name | Password: $password | Time: $time\n";  
-
+    
+    $newRecord = "$id,$name,$time\n";  
+    
     if (file_exists($filename)) {  
         $fileContents = file_get_contents($filename);  
     } else {  
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fileContents .= $newRecord;  
     file_put_contents($filename, $fileContents);  
 
-    $fileLines = file($filename);  
+    $fileLines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);  
 }  
 ?>  
 
@@ -117,20 +117,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>  
 
         <?php if (!empty($fileLines)): ?>  
-            <div class="file-lines">  
-                <h3>File Lines:</h3>  
+            <div class="file-lines">   
                 <table>  
                     <thead>  
                         <tr>  
-                            <th>Line Number</th>  
-                            <th>Details</th>  
+                            <th>ID</th>  
+                            <th>Name</th>  
+                            <th>Time</th>  
                         </tr>  
                     </thead>  
                     <tbody>  
-                        <?php foreach ($fileLines as $lineNumber => $lineContent): ?>  
+                        <?php foreach ($fileLines as $lineContent): ?>  
+                            <?php  
+                                list($id, $name, $time) = explode(',', $lineContent);  
+                            ?>  
                             <tr>  
-                                <td><?php echo $lineNumber + 1; ?></td>  
-                                <td><?php echo htmlspecialchars($lineContent); ?></td>  
+                                  
+                                <td><?php echo htmlspecialchars($id); ?></td>  
+                                <td><?php echo htmlspecialchars($name); ?></td>  
+                                <td><?php echo htmlspecialchars($time); ?></td>  
                             </tr>  
                         <?php endforeach; ?>  
                     </tbody>  
@@ -140,4 +145,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>  
 
 </body>  
-</html> 
+</html>
